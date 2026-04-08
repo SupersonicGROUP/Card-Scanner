@@ -1857,12 +1857,19 @@ async function renderProfile(){
 async function setFollowUp(){
     if(!curModal)return;
     const existingDate=curModal.followUpDate||'';
-    const dateStr=prompt('Set follow-up date (YYYY-MM-DD):',existingDate||new Date(Date.now()+86400000*2).toISOString().split('T')[0]);
+    // Show DD-MM-YYYY format
+    let defaultDate='';
+    if(existingDate){const ed=new Date(existingDate);defaultDate=String(ed.getDate()).padStart(2,'0')+'-'+String(ed.getMonth()+1).padStart(2,'0')+'-'+ed.getFullYear()}
+    else{const nd=new Date(Date.now()+86400000*2);defaultDate=String(nd.getDate()).padStart(2,'0')+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+nd.getFullYear()}
+    const dateStr=prompt('Set follow-up date (DD-MM-YYYY):',defaultDate);
     if(!dateStr)return;
-    // Validate date
-    const d=new Date(dateStr);if(isNaN(d.getTime())){toast('Invalid date','&#9888;');return}
-    // Update in IndexedDB
-    curModal.followUpDate=dateStr;
+    // Parse DD-MM-YYYY
+    const parts=dateStr.split(/[-\/\.]/);
+    let d;
+    if(parts.length===3&&parts[0].length<=2){d=new Date(parts[2],parts[1]-1,parts[0])}else{d=new Date(dateStr)}
+    if(isNaN(d.getTime())){toast('Invalid date! Use DD-MM-YYYY','&#9888;');return}
+    // Store as ISO for consistency
+    curModal.followUpDate=d.toISOString().split('T')[0];
     const tx=db.transaction('extracted','readwrite');
     tx.objectStore('extracted').put(curModal);
     toast('Follow-up set for '+d.toLocaleDateString('en-IN'),'&#128276;');
