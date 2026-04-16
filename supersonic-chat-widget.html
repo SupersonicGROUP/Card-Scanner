@@ -645,22 +645,23 @@ body{background:var(--bg);min-height:100vh;overflow-x:hidden}
 <script>
 const WEBHOOK_URL='https://ritin1n8n.app.n8n.cloud/webhook/f55f6636-5d2b-4ab4-9205-756bdbd2f510/chat';
 const WHATSAPP_NUMBER='916353767128';
+const GH_RAW='https://raw.githubusercontent.com/Ritin05/Card-Scanner/main/PRODUCTS%20PHOTOS/';
 const PRODUCTS=[
-  {name:'Yako Servo Motor & Drive',cat:'Automation Parts',desc:'High-precision Yako servo motor & drive system for CNC, textile & industrial automation.',img:'PRODUCTS PHOTOS/YAKO SERVO SET 200W.jpg',bg:'linear-gradient(135deg,#1E3A5F,#2563EB)',icon:'⚙️'},
-  {name:'Super Sonic Fiber Laser Machine',cat:'Laser Machinery',desc:'High-speed fiber laser cutting for MS, SS & Aluminium. 1kW to 20kW power range.',img:'PRODUCTS PHOTOS/SUPER SONIC FIBER LASER.jpeg',bg:'linear-gradient(135deg,#7F1D1D,#DC2626)',icon:'🔴'},
-  {name:'VFD Drive (Delixi / Folinn)',cat:'Automation Parts',desc:'Variable Frequency Drives for precise motor speed control. 0.4kW to 400kW.',img:'PRODUCTS PHOTOS/VFD DELIXI.jpg',bg:'linear-gradient(135deg,#1E3A5F,#0D9488)',icon:'⚡'},
-  {name:'MAX / Raycus Laser Source',cat:'Laser Parts',desc:'Genuine fiber laser sources for cutting & engraving. 1kW to 30kW available.',img:'PRODUCTS PHOTOS/MAX LASER SOURCE.png',bg:'linear-gradient(135deg,#991B1B,#F59E0B)',icon:'💡'},
-  {name:'BOCHU Laser Cutting Head',cat:'Laser Parts',desc:'Auto-focus cutting heads for high-precision fiber laser cutting at any thickness.',img:'PRODUCTS PHOTOS/BOCHU HEAD SET.avif',bg:'linear-gradient(135deg,#1E3A8A,#3B82F6)',icon:'🎯'},
-  {name:'Panasonic Servo System',cat:'Automation Parts',desc:'Panasonic A6 series servo motor & drive. Ultra-smooth motion control.',img:'PRODUCTS PHOTOS/PANASONIC SERVO SET.jpg',bg:'linear-gradient(135deg,#4C1D95,#10B981)',icon:'🔧'},
-  {name:'S&A Industrial Chiller',cat:'Laser Parts',desc:'Industrial water chillers for laser cooling. Optimal temperature for longer life.',img:'PRODUCTS PHOTOS/s&a chiller 6000 1.jpg',bg:'linear-gradient(135deg,#0E4429,#2563EB)',icon:'❄️'},
-  {name:'Pneumatic Cylinder & Valve',cat:'Automation Parts',desc:'Complete range of pneumatic cylinders & solenoid valves for industrial automation.',img:'PRODUCTS PHOTOS/NEUMATIC CYLINDER 01.jpg',bg:'linear-gradient(135deg,#065F46,#34D399)',icon:'🔩'},
-  {name:'CNC Spindle Motor',cat:'Automation Parts',desc:'Air & water cooled spindles for CNC routers. 1.5kW–7.5kW, 24000 RPM.',img:'PRODUCTS PHOTOS/CNC-Router-Parts-High-Speed-1-5kw-220V-380V-Air-Cooled-Spindle.avif',bg:'linear-gradient(135deg,#312E81,#6366F1)',icon:'🌀'},
-  {name:'Ball Screw & Linear Guide',cat:'Automation Parts',desc:'Precision ball screws & linear guideways. HIWIN & TBI brand. All sizes.',img:'PRODUCTS PHOTOS/ball screw & nut.jpeg',bg:'linear-gradient(135deg,#44403C,#A78BFA)',icon:'🔗'},
-  {name:'Stepper Motor & Drive',cat:'Automation Parts',desc:'NEMA 17, 23 & 34 steppers with microstepping drives for CNC & 3D printers.',img:'PRODUCTS PHOTOS/Stepper motors.JPG',bg:'linear-gradient(135deg,#1E293B,#3B82F6)',icon:'⚙️'},
-  {name:'Rack & Pinion Gear',cat:'Automation Parts',desc:'Hardened rack & pinion sets for CNC gantry machines. M1 to M3 module.',img:'PRODUCTS PHOTOS/Rack & Pinion.jpeg',bg:'linear-gradient(135deg,#065F46,#34D399)',icon:'⛓️'},
-  {name:'AC Gear Motor',cat:'Automation Parts',desc:'AC gear motors with gearboxes for conveyor, packaging & industrial use.',img:'PRODUCTS PHOTOS/AC GEAR MOTOR SET.jpeg',bg:'linear-gradient(135deg,#1E3A5F,#0EA5E9)',icon:'🔄'},
-  {name:'Weihong / NK105 Controller',cat:'Laser Parts',desc:'CNC motion controllers for routers & plasma. Multi-axis, USB & Ethernet.',img:'PRODUCTS PHOTOS/Wihong CNC Controller.png',bg:'linear-gradient(135deg,#1E3A8A,#6366F1)',icon:'🖥️'},
-  {name:'UV & CO₂ Laser System',cat:'Laser Parts',desc:'UV laser for PCB & glass marking. CO₂ for acrylic & wood cutting.',img:'PRODUCTS PHOTOS/uv laser 1.png',bg:'linear-gradient(135deg,#7F1D1D,#F97316)',icon:'🔬'}
+  {name:'Yako Servo Motor & Drive',cat:'Automation Parts',desc:'High-precision Yako servo motor & drive system for CNC, textile & industrial automation.',img:GH_RAW+'YAKO%20SERVO%20SET%20200W.jpg',bg:'linear-gradient(135deg,#1E3A5F,#2563EB)',icon:'⚙️'},
+  {name:'Super Sonic Fiber Laser Machine',cat:'Laser Machinery',desc:'High-speed fiber laser cutting for MS, SS & Aluminium. 1kW to 20kW power range.',img:GH_RAW+'SUPER%20SONIC%20FIBER%20LASER.jpeg',bg:'linear-gradient(135deg,#7F1D1D,#DC2626)',icon:'🔴'},
+  {name:'VFD Drive (Delixi / Folinn)',cat:'Automation Parts',desc:'Variable Frequency Drives for precise motor speed control. 0.4kW to 400kW.',img:GH_RAW+'VFD%20DELIXI.jpg',bg:'linear-gradient(135deg,#1E3A5F,#0D9488)',icon:'⚡'},
+  {name:'MAX / Raycus Laser Source',cat:'Laser Parts',desc:'Genuine fiber laser sources for cutting & engraving. 1kW to 30kW available.',img:GH_RAW+'MAX%20LASER%20SOURCE.png',bg:'linear-gradient(135deg,#991B1B,#F59E0B)',icon:'💡'},
+  {name:'BOCHU Laser Cutting Head',cat:'Laser Parts',desc:'Auto-focus cutting heads for high-precision fiber laser cutting at any thickness.',img:GH_RAW+'BOCHU%20HEAD%20SET.avif',bg:'linear-gradient(135deg,#1E3A8A,#3B82F6)',icon:'🎯'},
+  {name:'Panasonic Servo System',cat:'Automation Parts',desc:'Panasonic A6 series servo motor & drive. Ultra-smooth motion control.',img:GH_RAW+'PANASONIC%20SERVO%20SET.jpg',bg:'linear-gradient(135deg,#4C1D95,#10B981)',icon:'🔧'},
+  {name:'S&A Industrial Chiller',cat:'Laser Parts',desc:'Industrial water chillers for laser cooling. Optimal temperature for longer life.',img:GH_RAW+'s%26a%20chiller%206000%201.jpg',bg:'linear-gradient(135deg,#0E4429,#2563EB)',icon:'❄️'},
+  {name:'Pneumatic Cylinder & Valve',cat:'Automation Parts',desc:'Complete range of pneumatic cylinders & solenoid valves for industrial automation.',img:GH_RAW+'NEUMATIC%20CYLINDER%2001.jpg',bg:'linear-gradient(135deg,#065F46,#34D399)',icon:'🔩'},
+  {name:'CNC Spindle Motor',cat:'Automation Parts',desc:'Air & water cooled spindles for CNC routers. 1.5kW–7.5kW, 24000 RPM.',img:GH_RAW+'CNC-Router-Parts-High-Speed-1-5kw-220V-380V-Air-Cooled-Spindle.avif',bg:'linear-gradient(135deg,#312E81,#6366F1)',icon:'🌀'},
+  {name:'Ball Screw & Linear Guide',cat:'Automation Parts',desc:'Precision ball screws & linear guideways. HIWIN & TBI brand. All sizes.',img:GH_RAW+'ball%20screw%20%26%20nut.jpeg',bg:'linear-gradient(135deg,#44403C,#A78BFA)',icon:'🔗'},
+  {name:'Stepper Motor & Drive',cat:'Automation Parts',desc:'NEMA 17, 23 & 34 steppers with microstepping drives for CNC & 3D printers.',img:GH_RAW+'Stepper%20motors.JPG',bg:'linear-gradient(135deg,#1E293B,#3B82F6)',icon:'⚙️'},
+  {name:'Rack & Pinion Gear',cat:'Automation Parts',desc:'Hardened rack & pinion sets for CNC gantry machines. M1 to M3 module.',img:GH_RAW+'Rack%20%26%20Pinion.jpeg',bg:'linear-gradient(135deg,#065F46,#34D399)',icon:'⛓️'},
+  {name:'AC Gear Motor',cat:'Automation Parts',desc:'AC gear motors with gearboxes for conveyor, packaging & industrial use.',img:GH_RAW+'AC%20GEAR%20MOTOR%20SET.jpeg',bg:'linear-gradient(135deg,#1E3A5F,#0EA5E9)',icon:'🔄'},
+  {name:'Weihong / NK105 Controller',cat:'Laser Parts',desc:'CNC motion controllers for routers & plasma. Multi-axis, USB & Ethernet.',img:GH_RAW+'Wihong%20CNC%20Controller.png',bg:'linear-gradient(135deg,#1E3A8A,#6366F1)',icon:'🖥️'},
+  {name:'UV & CO₂ Laser System',cat:'Laser Parts',desc:'UV laser for PCB & glass marking. CO₂ for acrylic & wood cutting.',img:GH_RAW+'uv%20laser%201.png',bg:'linear-gradient(135deg,#7F1D1D,#F97316)',icon:'🔬'}
 ];
 const TICKER_ITEMS=['Servo Motors','VFD Drives','Fiber Laser Machines','Ball Screws','CNC Spindles','Stepper Motors','Laser Cutting Heads','Pneumatic Cylinders','Rack & Pinion Gears','AC Gear Motors','CNC Controllers','Industrial Chillers','Linear Guideways','Laser Sources','Drag Chains','Planetary Gearboxes'];
 
@@ -676,7 +677,7 @@ function buildCarousel(){
   const dots=document.getElementById('carouselDots');
   PRODUCTS.forEach((p,i)=>{
     const isLaser=p.cat.toLowerCase().includes('laser');
-    const imgSrc=p.img?p.img.split('/').map(s=>encodeURIComponent(s)).join('/'):'';
+    const imgSrc=p.img||'';
     const card=document.createElement('div');
     card.className='product-card';
     card.onclick=()=>inquireAbout(p.name);
