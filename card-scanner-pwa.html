@@ -1468,11 +1468,16 @@ function compress(url,mw=1200){return new Promise(r=>{const i=new Image();i.onlo
 // ============ VOICE ============
 async function toggleRec(){isRec?stopRec():startRec()}
 async function startRec(){
-    try{const s=await navigator.mediaDevices.getUserMedia({audio:true});mediaRec=new MediaRecorder(s,{mimeType:'audio/webm;codecs=opus'});audioChunks=[];
+    try{const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mt=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg',''].find(t=>!t||MediaRecorder.isTypeSupported(t));
+    mediaRec=new MediaRecorder(s,mt?{mimeType:mt}:{});audioChunks=[];
     mediaRec.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data)};
-    mediaRec.onstop=()=>{audioBlob=new Blob(audioChunks,{type:'audio/webm'});document.getElementById('audioEl').src=URL.createObjectURL(audioBlob);document.getElementById('audioBox').style.display='block';document.getElementById('recWave').classList.remove('show');s.getTracks().forEach(t=>t.stop())};
+    mediaRec.onstop=()=>{audioBlob=new Blob(audioChunks,{type:mediaRec.mimeType||'audio/webm'});document.getElementById('audioEl').src=URL.createObjectURL(audioBlob);document.getElementById('audioBox').style.display='block';document.getElementById('recWave').classList.remove('show');s.getTracks().forEach(t=>t.stop())};
     mediaRec.start();isRec=true;recSec=0;document.getElementById('recBtn').classList.add('on');document.getElementById('recWave').classList.add('show');tickRec();recTimer=setInterval(tickRec,1000);
-    }catch(e){toast('Mic access denied','&#128683;')}
+    }catch(e){
+        const msg=e.name==='NotAllowedError'?'Mic permission denied':e.name==='NotFoundError'?'No mic found':e.name==='NotSupportedError'?'Recording not supported on this browser':('Mic error: '+e.message);
+        toast(msg,'&#128683;');console.error('Voice rec error:',e.name,e.message);
+    }
 }
 function stopRec(){if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();isRec=false;clearInterval(recTimer);document.getElementById('recBtn').classList.remove('on');document.getElementById('recSt').textContent='Recording saved';document.getElementById('recSt').classList.remove('active');document.getElementById('recWave').classList.remove('show')}
 function tickRec(){recSec++;const m=Math.floor(recSec/60),s=recSec%60;document.getElementById('recSt').textContent=`Recording ${m}:${String(s).padStart(2,'0')}`;document.getElementById('recSt').classList.add('active')}
@@ -1581,7 +1586,7 @@ async function sendWH(c){
     const fd=new FormData();
     for(let i=0;i<c.frontImages.length;i++)fd.append('Business Card Image',url2blob(c.frontImages[i]),`front_${i}.jpg`);
     for(let i=0;i<c.backImages.length;i++)fd.append('Business Card Back Side (Optional)',url2blob(c.backImages[i]),`back_${i}.jpg`);
-    if(c.voiceNote)fd.append('Voice Note',b642blob(c.voiceNote,'audio/webm'),'voice_note.webm');
+    if(c.voiceNote){const vMime=c.voiceNote.startsWith('data:')?c.voiceNote.split(';')[0].split(':')[1]:'audio/webm';const vExt=vMime.includes('mp4')?'mp4':vMime.includes('ogg')?'ogg':'webm';fd.append('Voice Note',b642blob(c.voiceNote,vMime),`voice_note.${vExt}`)}
     fd.append('Sales Person Name',c.salesPerson);fd.append('Remark',c.remark);
     fd.append('Event Name',c.eventName||'');fd.append('Quick Notes',c.quickNotes||'');
     fd.append('Send Notification',c.sendNotification===false?'No':'Yes');
