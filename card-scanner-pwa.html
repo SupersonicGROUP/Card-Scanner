@@ -1558,7 +1558,7 @@ async function submitCard(){
         const cf=[];for(const m of frontImgs)cf.push(await compress(m.url));
         const cb=[];for(const m of backImgs)cb.push(await compress(m.url));
         let ab=null;if(audioBlob)ab=await blob2b64(audioBlob);
-        const data={frontImages:cf,backImages:cb,voiceNote:ab,salesPerson:getSalesPerson(),remark:document.getElementById('pr').value,eventName:evVal,sendNotification:sendNotif,quickNotes:document.getElementById('qn').value,timestamp:new Date().toISOString(),status:'pending'};
+        const data={frontImages:cf,backImages:cb,voiceNote:ab,salesPerson:getSalesPerson(),scannedBy:currentUser.email,remark:document.getElementById('pr').value,eventName:evVal,sendNotification:sendNotif,quickNotes:document.getElementById('qn').value,timestamp:new Date().toISOString(),status:'pending'};
         await dbAdd('cards',data);toast('Card saved!','&#9989;');resetForm();refreshStats();renderQueue();renderHist();
         if(navigator.onLine)setTimeout(()=>syncAll(),1000);
     }catch(e){console.error(e);toast('Error saving','&#9888;')}
@@ -1595,7 +1595,7 @@ async function syncAll(){
         try{
             await dbUpd('cards',c.id,d=>{d.status='sending'});renderQueue();
             const resp=await sendWH(c);let ext=null;try{const j=await resp.json();if(j&&typeof j==='object')ext=j}catch(e){}
-            const entry={...(ext||{company_name:'',full_name:''}),salesPerson:c.salesPerson,remark:c.remark,eventName:c.eventName,quickNotes:c.quickNotes,frontImages:c.frontImages,backImages:c.backImages,timestamp:c.timestamp,syncedAt:new Date().toISOString(),_raw:!ext};
+            const entry={...(ext||{company_name:'',full_name:''}),salesPerson:c.salesPerson,scannedBy:c.scannedBy,remark:c.remark,eventName:c.eventName,quickNotes:c.quickNotes,frontImages:c.frontImages,backImages:c.backImages,timestamp:c.timestamp,syncedAt:new Date().toISOString(),_raw:!ext};
             entry._score=calcScore(entry);entry._scoreLabel=scoreLabel(entry._score);
             await dbAdd('extracted',entry);await dbUpd('cards',c.id,d=>{d.status='sent';d.sentAt=new Date().toISOString()});ok++;
         }catch(e){console.error('sync err',c.id,e);await dbUpd('cards',c.id,d=>{d.status='pending'});fail++}
@@ -1628,9 +1628,14 @@ async function sendWH(c){
 }
 
 // ============ STATS ============
+function myFilter(cards){
+    if(!currentUser||currentUser.role==='admin')return cards;
+    if(currentUser.role==='sales')return cards.filter(c=>(c.salesPerson||'').toLowerCase()===(currentUser.name||'').toLowerCase());
+    return cards.filter(c=>c.scannedBy===currentUser.email);
+}
 function animNum(el,t){const s=parseInt(el.textContent)||0;if(s===t)return;const d=t-s,st=Math.min(Math.abs(d),20),tm=300/st;let c=s;const inc=d/st;const ti=setInterval(()=>{c+=inc;if((d>0&&c>=t)||(d<0&&c<=t)){clearInterval(ti);el.textContent=t}else el.textContent=Math.round(c)},tm)}
 async function refreshStats(){
-    const all=await dbAll('cards'),ext=await dbAll('extracted');
+    const all=myFilter(await dbAll('cards')),ext=myFilter(await dbAll('extracted'));
     const sent=all.filter(c=>c.status==='sent'),pend=all.filter(c=>c.status==='pending'||c.status==='sending');
     const today=all.filter(c=>new Date(c.timestamp).toDateString()===new Date().toDateString());
     animNum(document.getElementById('stTotal'),all.length);animNum(document.getElementById('stSynced'),sent.length);
@@ -1670,7 +1675,7 @@ function drawPie(pct){
 
 // ============ ANALYTICS ============
 async function renderAnalytics(){
-    const ext=await dbAll('extracted');
+    const ext=myFilter(await dbAll('extracted'));
     const hot=ext.filter(c=>c._scoreLabel==='hot').length;
     const warm=ext.filter(c=>c._scoreLabel==='warm').length;
     const cold=ext.filter(c=>c._scoreLabel==='cold').length;
@@ -1707,7 +1712,7 @@ document.getElementById('qn').addEventListener('input',()=>{clearTimeout(window.
 // ============ CARDS PAGE ============
 function setFilter(f,el){activeFilter=f;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));el.classList.add('on');renderCards()}
 async function renderCards(){
-    const all=await dbAll('extracted');const q=(document.getElementById('sBox')?.value||'').toLowerCase();
+    const all=myFilter(await dbAll('extracted'));const q=(document.getElementById('sBox')?.value||'').toLowerCase();
     let f=all;if(q)f=all.filter(c=>[c.company_name,c.full_name,c.email,c.phone_number,c.mobile_number,c.salesPerson,c.eventName,c.quickNotes,c.products,c.job_title].filter(Boolean).join(' ').toLowerCase().includes(q));
     if(activeFilter==='hot')f=f.filter(c=>c._scoreLabel==='hot');
     else if(activeFilter!=='all')f=f.filter(c=>(c.remark||'').toLowerCase()===activeFilter);
@@ -1885,14 +1890,14 @@ function goPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList
     if(id==='pgQueue'){batchSel.clear();updateBatch();renderQueue()}if(id==='pgCards')renderCards();if(id==='pgAna')renderAnalytics();if(id==='pgScan')refreshStats();if(id==='pgProfile')renderProfile()
 }
 async function renderQueue(){
-    const pend=await dbIdx('cards','status','pending'),send=await dbIdx('cards','status','sending'),all=[...send,...pend];
+    const pend=await dbIdx('cards','status','pending'),send=await dbIdx('cards','status','sending'),all=myFilter([...send,...pend]);
     const el=document.getElementById('qList');
     if(!all.length){el.innerHTML='<div class="empty"><div class="empty-ico">&#9989;</div><p>All synced!</p><p class="esub">Cards up to date</p></div>';return}
     el.innerHTML=all.map(c=>{const t=new Date(c.timestamp).toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});const st=c.status==='sending'?'sending':'pending';const ck=batchSel.has(c.id)?'on':'';
         return `<div class="qi"><div class="qi-check ${ck}" onclick="event.stopPropagation();toggleBatch(${c.id})">${ck?'&#10003;':''}</div><div class="qi-body"><div class="qi-title">${esc(c.salesPerson)} &middot; ${c.frontImages.length} card(s)</div><div class="qi-sub">${t} &middot; ${c.remark}${c.eventName?' &middot; '+esc(c.eventName):''}</div></div><span class="qbadge ${st}">${st==='sending'?'Syncing':'Pending'}</span></div>`}).join('');
 }
 async function renderHist(){
-    const sent=await dbIdx('cards','status','sent');const el=document.getElementById('hList');
+    const sent=myFilter(await dbIdx('cards','status','sent'));const el=document.getElementById('hList');
     if(!sent.length){el.innerHTML='<div class="empty"><div class="empty-ico">&#128203;</div><p>No activity</p></div>';return}
     sent.sort((a,b)=>new Date(b.sentAt||b.timestamp)-new Date(a.sentAt||a.timestamp));
     el.innerHTML=sent.slice(0,15).map(c=>{const t=new Date(c.timestamp).toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});const st=c.sentAt?new Date(c.sentAt).toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'}):'';
