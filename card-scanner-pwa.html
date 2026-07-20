@@ -1010,20 +1010,33 @@
     <div class="neu">
         <div class="neu-title"><span class="nt-icon">&#128247;</span> <span data-en="Card Photos" data-hi="&#2325;&#2366;&#2352;&#2381;&#2337; &#2347;&#2379;&#2335;&#2379;">Card Photos</span></div>
         <span class="flabel"><span data-en="Front Side" data-hi="&#2360;&#2366;&#2350;&#2344;&#2375; &#2325;&#2366; &#2349;&#2366;&#2327;">Front Side</span> <span class="freq">*</span></span>
-        <div class="upload-zone" onclick="document.getElementById('fIn').click()">
-            <div class="uz-icon">&#128247;</div>
-            <div class="uz-text" data-en="Tap to capture or select" data-hi="&#2347;&#2379;&#2335;&#2379; &#2354;&#2375;&#2344;&#2375; &#2325;&#2375; &#2354;&#2367;&#2319; &#2335;&#2376;&#2346; &#2325;&#2352;&#2375;&#2306;">Tap to capture or select</div>
-            <div class="uz-hint" data-en="Supports multiple images" data-hi="&#2319;&#2325; &#2360;&#2375; &#2332;&#2381;&#2351;&#2366;&#2342;&#2366; &#2347;&#2379;&#2335;&#2379;">Supports multiple images</div>
-            <input type="file" id="fIn" accept="image/*" multiple>
+        <div style="display:flex;gap:10px;margin-bottom:8px">
+            <button type="button" onclick="document.getElementById('fInCam').click()" style="flex:1;padding:18px 10px;border:2px dashed #2563eb;border-radius:14px;background:#eff6ff;color:#1e40af;font-size:15px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px">
+                <span style="font-size:28px">📷</span>
+                <span data-en="Camera" data-hi="कैमरा">Camera</span>
+            </button>
+            <button type="button" onclick="document.getElementById('fIn').click()" style="flex:1;padding:18px 10px;border:2px dashed #64748b;border-radius:14px;background:#f8fafc;color:#475569;font-size:15px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px">
+                <span style="font-size:28px">🖼️</span>
+                <span data-en="Gallery" data-hi="गैलरी">Gallery</span>
+            </button>
         </div>
+        <input type="file" id="fInCam" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="fIn" accept="image/*" multiple style="display:none">
         <div class="thumbs" id="fPrev"></div>
 
         <span class="flabel" style="margin-top:12px"><span data-en="Back Side" data-hi="&#2346;&#2368;&#2331;&#2375; &#2325;&#2366; &#2349;&#2366;&#2327;">Back Side</span> <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></span>
-        <div class="upload-zone" onclick="document.getElementById('bIn').click()">
-            <div class="uz-icon">&#128260;</div>
-            <div class="uz-text" data-en="Tap for back side" data-hi="&#2346;&#2368;&#2331;&#2375; &#2325;&#2366; &#2347;&#2379;&#2335;&#2379;">Tap for back side</div>
-            <input type="file" id="bIn" accept="image/*" multiple>
+        <div style="display:flex;gap:10px;margin-bottom:8px">
+            <button type="button" onclick="document.getElementById('bInCam').click()" style="flex:1;padding:14px 10px;border:2px dashed #2563eb;border-radius:14px;background:#eff6ff;color:#1e40af;font-size:14px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <span style="font-size:24px">📷</span>
+                <span data-en="Camera" data-hi="कैमरा">Camera</span>
+            </button>
+            <button type="button" onclick="document.getElementById('bIn').click()" style="flex:1;padding:14px 10px;border:2px dashed #64748b;border-radius:14px;background:#f8fafc;color:#475569;font-size:14px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <span style="font-size:24px">🖼️</span>
+                <span data-en="Gallery" data-hi="गैलरी">Gallery</span>
+            </button>
         </div>
+        <input type="file" id="bInCam" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="bIn" accept="image/*" multiple style="display:none">
         <div class="thumbs" id="bPrev"></div>
 
         <div class="prev-strip" id="prevStrip">
@@ -1033,7 +1046,8 @@
         </div>
     </div>
 
-    <!-- Voice -->
+    <!-- Voice Note section temporarily hidden -->
+    <!--
     <div class="neu">
         <div class="neu-title"><span class="nt-icon">&#127908;</span> <span data-en="Voice Note" data-hi="&#2357;&#2377;&#2311;&#2360; &#2344;&#2379;&#2335;">Voice Note</span></div>
         <div class="voice-row">
@@ -1049,6 +1063,7 @@
             <button class="audio-del" onclick="delRec()">&#10005; <span data-en="Remove recording" data-hi="&#2352;&#2367;&#2325;&#2377;&#2352;&#2381;&#2337;&#2367;&#2306;&#2327; &#2361;&#2335;&#2366;&#2319;&#2306;">Remove recording</span></button>
         </div>
     </div>
+    -->
 
     <!-- Lead Info -->
     <div class="neu">
@@ -1069,7 +1084,7 @@
         </div>
         <div class="fg">
             <span class="flabel" data-en="Event" data-hi="&#2311;&#2357;&#2375;&#2306;&#2335;">Event</span> <span class="freq">*</span>
-            <select id="ev" onchange="onEventChange()"><option value="">Select Event...</option><option value="AMTEX 2026">AMTEX 2026</option><option value="AUTOMATION EXPO 2026">AUTOMATION EXPO 2026</option><option value="IMTEX 2026 BANGALORE">IMTEX 2026 BANGALORE</option><option value="__other__">Other (Type below)</option></select>
+            <select id="ev" onchange="onEventChange()"><option value="">Select Event...</option><option value="AMTEX 2026">AMTEX DELHI 2026</option><option value="AUTOMATION EXPO 2026">AUTOMATION EXPO MUMBAI 2026</option><option value="IMTEX 2026 BANGALORE">IMTEX 2026 BANGALORE</option><option value="__other__">Other (Type below)</option></select>
         </div>
         <div class="fg" id="evOtherWrap" style="display:none">
             <span class="flabel">Event Name</span>
@@ -1476,7 +1491,9 @@ const dbDel=(s,id)=>new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.
 
 // ============ IMAGES ============
 document.getElementById('fIn').addEventListener('change',e=>pickImgs(e.target.files,'f'));
+document.getElementById('fInCam').addEventListener('change',e=>pickImgs(e.target.files,'f'));
 document.getElementById('bIn').addEventListener('change',e=>pickImgs(e.target.files,'b'));
+document.getElementById('bInCam').addEventListener('change',e=>pickImgs(e.target.files,'b'));
 function pickImgs(files,side){
     const arr=side==='f'?frontImgs:backImgs;
     for(const f of files){if(!f.type.startsWith('image/'))continue;const rd=new FileReader();rd.onload=e=>{arr.push({file:f,url:e.target.result});renderThumbs(side);updatePreview()};rd.readAsDataURL(f)}
@@ -1577,9 +1594,9 @@ function resetForm(){
     frontImgs=[];backImgs=[];audioBlob=null;audioChunks=[];
     ['fPrev','bPrev'].forEach(id=>document.getElementById(id).innerHTML='');
     ['fIn','bIn'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('audioBox').style.display='none';
-    document.getElementById('recSt').textContent=lang==='hi'?'\u0930\u093F\u0915\u0949\u0930\u094D\u0921 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0335\u0948\u092A \u0915\u0930\u0947\u0902':'Tap to record';
-    document.getElementById('recWave').classList.remove('show');
+    const _ab=document.getElementById('audioBox');if(_ab)_ab.style.display='none';
+    const _rs=document.getElementById('recSt');if(_rs)_rs.textContent=lang==='hi'?'\u0930\u093F\u0915\u0949\u0930\u094D\u0921 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0335\u0948\u092A \u0915\u0930\u0947\u0902':'Tap to record';
+    const _rw=document.getElementById('recWave');if(_rw)_rw.classList.remove('show');
     document.getElementById('qn').value='';document.getElementById('dupWarn').classList.remove('show');
     document.getElementById('prevStrip').classList.remove('show');
     document.getElementById('ev').value='';document.getElementById('evOther').value='';
