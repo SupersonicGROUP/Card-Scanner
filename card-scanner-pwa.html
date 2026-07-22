@@ -1483,6 +1483,7 @@ function openDB(){
 }
 const dbAdd=(s,d)=>new Promise((r,j)=>{const t=db.transaction(s,'readwrite');const o=t.objectStore(s).add(d);o.onsuccess=()=>r(o.result);o.onerror=e=>j(e.target.error)});
 const dbAll=(s)=>new Promise((r,j)=>{const t=db.transaction(s,'readonly');const o=t.objectStore(s).getAll();o.onsuccess=()=>r(o.result);o.onerror=e=>j(e.target.error)});
+const dbGet=(s,id)=>new Promise((r,j)=>{const t=db.transaction(s,'readonly');const o=t.objectStore(s).get(id);o.onsuccess=()=>r(o.result);o.onerror=e=>j(e.target.error)});
 const dbIdx=(s,i,v)=>new Promise((r,j)=>{const t=db.transaction(s,'readonly');const o=t.objectStore(s).index(i).getAll(v);o.onsuccess=()=>r(o.result);o.onerror=e=>j(e.target.error)});
 const dbUpd=(s,id,fn)=>new Promise((r,j)=>{const t=db.transaction(s,'readwrite');const st=t.objectStore(s);const g=st.get(id);g.onsuccess=()=>{const d=g.result;fn(d);st.put(d).onsuccess=()=>r()};g.onerror=e=>j(e.target.error)});
 const dbDel=(s,id)=>new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).delete(id).onsuccess=()=>r();t.onerror=e=>j(e.target.error)});
@@ -1609,25 +1610,37 @@ function resetForm(){
 }
 
 // ============ SYNC ============
+let isSyncing=false;
 async function syncAll(){
-    const pend=await dbIdx('cards','status','pending');
-    if(!pend.length)return toast('Nothing to sync','&#9989;');
-    if(!navigator.onLine)return toast('Offline - will sync later','&#128268;');
-    const btn=document.getElementById('syncBtn');btn.disabled=true;btn.innerHTML='<span>&#8987;</span> Syncing...';
-    let ok=0,fail=0;
-    for(const c of pend){
-        try{
-            await dbUpd('cards',c.id,d=>{d.status='sending'});renderQueue();
-            const resp=await sendWH(c);let ext=null;try{const j=await resp.json();if(j&&typeof j==='object')ext=j}catch(e){}
-            const entry={...(ext||{company_name:'',full_name:''}),salesPerson:c.salesPerson,scannedBy:c.scannedBy,remark:c.remark,eventName:c.eventName,quickNotes:c.quickNotes,frontImages:c.frontImages,backImages:c.backImages,timestamp:c.timestamp,syncedAt:new Date().toISOString(),_raw:!ext};
-            entry._score=calcScore(entry);entry._scoreLabel=scoreLabel(entry._score);
-            await dbAdd('extracted',entry);await dbUpd('cards',c.id,d=>{d.status='sent';d.sentAt=new Date().toISOString()});ok++;
-        }catch(e){console.error('sync err',c.id,e);await dbUpd('cards',c.id,d=>{d.status='pending'});fail++}
-        renderQueue();
+    // Global lock: prevent concurrent syncs (was causing duplicate rows)
+    if(isSyncing)return;
+    isSyncing=true;
+    const btn=document.getElementById('syncBtn');
+    try{
+        const pend=await dbIdx('cards','status','pending');
+        if(!pend.length){toast('Nothing to sync','&#9989;');return;}
+        if(!navigator.onLine){toast('Offline - will sync later','&#128268;');return;}
+        btn.disabled=true;btn.innerHTML='<span>&#8987;</span> Syncing...';
+        let ok=0,fail=0;
+        for(const c of pend){
+            try{
+                // Re-check status right before sending \u2014 skip if another pass already took it
+                const fresh=await dbGet('cards',c.id);
+                if(!fresh||fresh.status!=='pending'){continue;}
+                await dbUpd('cards',c.id,d=>{d.status='sending'});renderQueue();
+                const resp=await sendWH(c);let ext=null;try{const j=await resp.json();if(j&&typeof j==='object')ext=j}catch(e){}
+                const entry={...(ext||{company_name:'',full_name:''}),salesPerson:c.salesPerson,scannedBy:c.scannedBy,remark:c.remark,eventName:c.eventName,quickNotes:c.quickNotes,frontImages:c.frontImages,backImages:c.backImages,timestamp:c.timestamp,syncedAt:new Date().toISOString(),_raw:!ext};
+                entry._score=calcScore(entry);entry._scoreLabel=scoreLabel(entry._score);
+                await dbAdd('extracted',entry);await dbUpd('cards',c.id,d=>{d.status='sent';d.sentAt=new Date().toISOString()});ok++;
+            }catch(e){console.error('sync err',c.id,e);await dbUpd('cards',c.id,d=>{d.status='pending'});fail++}
+            renderQueue();
+        }
+        refreshStats();renderHist();renderCards();renderAnalytics();
+        toast(fail?`${ok} synced, ${fail} failed`:`${ok} card(s) synced!`,fail?'&#9888;':'&#9989;');
+    }finally{
+        isSyncing=false;
+        if(btn){btn.disabled=false;btn.innerHTML='<span>&#128259;</span> '+(lang==='hi'?'\u0905\u092D\u0940 \u0938\u093F\u0902\u0915 \u0915\u0930\u0947\u0902':'Sync Now');}
     }
-    refreshStats();renderHist();renderCards();renderAnalytics();
-    btn.disabled=false;btn.innerHTML='<span>&#128259;</span> '+(lang==='hi'?'\u0905\u092D\u0940 \u0938\u093F\u0902\u0915 \u0915\u0930\u0947\u0902':'Sync Now');
-    toast(fail?`${ok} synced, ${fail} failed`:`${ok} card(s) synced!`,fail?'&#9888;':'&#9989;');
 }
 async function sendWH(c){
     const fd=new FormData();
