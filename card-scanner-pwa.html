@@ -1583,7 +1583,8 @@ async function submitCard(){
         const cf=[];for(const m of frontImgs)cf.push(await compress(m.url));
         const cb=[];for(const m of backImgs)cb.push(await compress(m.url));
         let ab=null;if(audioBlob)ab=await blob2b64(audioBlob);
-        const data={frontImages:cf,backImages:cb,voiceNote:ab,salesPerson:getSalesPerson(),scannedBy:currentUser.email,remark:document.getElementById('pr').value,eventName:evVal,sendNotification:sendNotif,quickNotes:document.getElementById('qn').value,timestamp:new Date().toISOString(),status:'pending'};
+        const cardId=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():('c'+Date.now()+'_'+Math.random().toString(36).slice(2));
+        const data={card_id:cardId,frontImages:cf,backImages:cb,voiceNote:ab,salesPerson:getSalesPerson(),scannedBy:currentUser.email,remark:document.getElementById('pr').value,eventName:evVal,sendNotification:sendNotif,quickNotes:document.getElementById('qn').value,timestamp:new Date().toISOString(),status:'pending'};
         await dbAdd('cards',data);toast('Card saved!','&#9989;');resetForm();refreshStats();renderQueue();renderHist();
         if(navigator.onLine)setTimeout(()=>syncAll(),1000);
     }catch(e){console.error(e);toast('Error saving','&#9888;')}
@@ -1650,6 +1651,7 @@ async function sendWH(c){
     fd.append('Sales Person Name',c.salesPerson);fd.append('Remark',c.remark);
     fd.append('Event Name',c.eventName||'');fd.append('Quick Notes',c.quickNotes||'');
     fd.append('Send Notification',c.sendNotification===false?'No':'Yes');
+    fd.append('Card ID',c.card_id||('legacy_'+c.id));
     console.log('Sending to webhook:',WH);
     console.log('FormData keys:',[...fd.keys()]);
     try{
